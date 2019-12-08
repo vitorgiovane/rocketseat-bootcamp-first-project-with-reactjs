@@ -11,6 +11,27 @@ class Main extends Component {
     loading: false
   }
 
+  componentDidMount() {
+    const repositories = JSON.parse(localStorage.getItem('repositories'))
+
+    if (repositories) {
+      this.setState({
+        repositories
+      })
+    }
+  }
+
+  componentDidUpdate(previousProps, previousState) {
+    const { repositories: previousRepositores } = previousState
+    const { repositories } = this.state
+    if (repositories !== previousRepositores) {
+      localStorage.setItem(
+        'repositories',
+        JSON.stringify(this.state.repositories)
+      )
+    }
+  }
+
   handleInputChange = e => {
     this.setState({
       newRepository: e.target.value
