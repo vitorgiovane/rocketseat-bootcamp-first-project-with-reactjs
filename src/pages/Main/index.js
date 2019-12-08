@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Container, Form, SubmitButton } from './styles'
+import { Container, Form, List, SubmitButton } from './styles'
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa'
 
 import api from '../../services/api'
@@ -35,7 +35,7 @@ class Main extends Component {
   }
 
   render() {
-    const { newRepository, loading } = this.state
+    const { loading, newRepository, repositories } = this.state
     return (
       <Container>
         <h1>
@@ -58,6 +58,15 @@ class Main extends Component {
             )}
           </SubmitButton>
         </Form>
+
+        <List>
+          {repositories.map(repository => (
+            <li key={repository.name}>
+              <span>{repository.name}</span>
+              <a href="#">Details</a>
+            </li>
+          ))}
+        </List>
       </Container>
     )
   }
