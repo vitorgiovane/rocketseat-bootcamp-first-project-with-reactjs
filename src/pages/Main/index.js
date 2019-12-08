@@ -1,21 +1,66 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { Container, Form, SubmitButton } from './styles'
-import { FaGithubAlt, FaPlus } from 'react-icons/fa'
+import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa'
 
-const Main = () => (
-  <Container>
-    <h1>
-      <FaGithubAlt />
-      Repositories
-    </h1>
+import api from '../../services/api'
 
-    <Form onSubmit={() => {}}>
-      <input type="text" placeholder="Add repository" />
-      <SubmitButton disabled={false}>
-        <FaPlus color="#FFFFFF" size={14} />
-      </SubmitButton>
-    </Form>
-  </Container>
-)
+class Main extends Component {
+  state = {
+    newRepository: '',
+    repositories: [],
+    loading: false
+  }
+
+  handleInputChange = e => {
+    this.setState({
+      newRepository: e.target.value
+    })
+  }
+
+  handleSubmit = async e => {
+    e.preventDefault()
+    this.setState({ loading: true })
+    const { newRepository, repositories } = this.state
+    const response = await api.get(`/repos/${newRepository}`)
+
+    const data = {
+      name: response.data.name
+    }
+
+    this.setState({
+      repositories: [...repositories, data],
+      newRepository: '',
+      loading: false
+    })
+  }
+
+  render() {
+    const { newRepository, loading } = this.state
+    return (
+      <Container>
+        <h1>
+          <FaGithubAlt />
+          Repositories
+        </h1>
+
+        <Form onSubmit={this.handleSubmit}>
+          <input
+            type="text"
+            placeholder="Add repository"
+            value={newRepository}
+            onChange={this.handleInputChange}
+          />
+          <SubmitButton loading={loading ? 1 : 0}>
+            {loading ? (
+              <FaSpinner color="#FFFFFF" size={18} />
+            ) : (
+              <FaPlus color="#FFFFFF" size={14} />
+            )}
+          </SubmitButton>
+        </Form>
+      </Container>
+    )
+  }
+}
 
 export default Main
