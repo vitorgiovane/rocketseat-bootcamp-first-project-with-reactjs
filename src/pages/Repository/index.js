@@ -1,11 +1,20 @@
 import React, { Component } from 'react'
 import api from '../../services/api'
+import PropTypes from 'prop-types'
 
 export default class Repository extends Component {
   state = {
     repository: {},
     issues: [],
     loading: true
+  }
+
+  static propTypes = {
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        repository: PropTypes.string
+      })
+    }).isRequired
   }
 
   async componentDidMount() {
