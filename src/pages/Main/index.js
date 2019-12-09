@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import { Container, Form, List, SubmitButton } from './styles'
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa'
 
@@ -45,7 +46,7 @@ class Main extends Component {
     const response = await api.get(`/repos/${newRepository}`)
 
     const data = {
-      name: response.data.name
+      name: response.data.full_name
     }
 
     this.setState({
@@ -84,7 +85,9 @@ class Main extends Component {
           {repositories.map(repository => (
             <li key={repository.name}>
               <span>{repository.name}</span>
-              <a href="#">Details</a>
+              <Link to={`/repository/${encodeURIComponent(repository.name)}`}>
+                Details
+              </Link>
             </li>
           ))}
         </List>
