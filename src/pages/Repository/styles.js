@@ -1,5 +1,66 @@
 import styled from 'styled-components'
 
+export const IssueList = styled.ul`
+  padding-top: 30px;
+  margin-top: 30px;
+  border-top: 1px solid #eee;
+  list-style: none;
+
+  li {
+    display: flex;
+    padding: 15px 10px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    align-items: center;
+
+    & + li {
+      margin-top: 10px;
+    }
+
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #eee;
+      margin-right: 5px;
+    }
+
+    div {
+      flex: 1;
+
+      strong {
+        font-size: 16px;
+        display: flex;
+        flex-wrap: wrap;
+
+        a {
+          text-decoration: none;
+          color: #333;
+          margin-right: 10px;
+
+          &:hover {
+            color: #7159c1;
+          }
+        }
+
+        span {
+          padding: 3px 6px;
+          background-color: #eee;
+          margin-right: 5px;
+          border-radius: 6px;
+          font-size: 12px;
+        }
+      }
+
+      p {
+        margin-top: 5px;
+        color: #999;
+        font-size: 12px;
+      }
+    }
+  }
+`
+
 export const Loading = styled.div`
   color: #ffffff;
   font-size: 30px;
