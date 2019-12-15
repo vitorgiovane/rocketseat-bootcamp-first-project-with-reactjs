@@ -3,7 +3,13 @@ import api from '../../services/api'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-import { IssueContainer, IssueList, Loading, Owner } from './styles'
+import {
+  IssueContainer,
+  IssueList,
+  IssuesNavigation,
+  Loading,
+  Owner
+} from './styles'
 import Container from '../../components/container'
 import Filter from '../../components/filter'
 
@@ -12,8 +18,9 @@ export default class Repository extends Component {
     repository: {},
     issues: [],
     loading: true,
-    activeFilter: 'all',
-    filterOptions: ['all', 'open', 'closed']
+    issuesState: 'all',
+    issuesStateOptions: ['all', 'open', 'closed'],
+    page: 1
   }
 
   static propTypes = {
@@ -34,7 +41,8 @@ export default class Repository extends Component {
       api.get(`/repos/${repositoryName}/issues`, {
         params: {
           state: 'all',
-          per_page: 20
+          per_page: 20,
+          page: 1
         }
       })
     ])
@@ -46,25 +54,38 @@ export default class Repository extends Component {
     })
   }
 
-  handleFilterChange = async e => {
-    const activeFilter = e.target.value
-    this.setState({ loading: true, activeFilter })
+  loadIssues = async () => {
+    const { repository, issuesState, page } = this.state
 
-    const issues = await api.get(
-      `/repos/${this.state.repository.full_name}/issues`,
-      {
-        params: {
-          state: activeFilter,
-          per_page: 20
-        }
+    const issues = await api.get(`/repos/${repository.full_name}/issues`, {
+      params: {
+        state: issuesState,
+        per_page: 20,
+        page
       }
-    )
+    })
 
     this.setState({
       issues: issues.data,
       loading: false,
-      activeFilter
+      issuesState
     })
+  }
+
+  handleFilterChange = async e => {
+    const issuesState = e.target.value
+    await this.setState({ loading: true, issuesState, page: 1 })
+
+    this.loadIssues()
+  }
+
+  handlePage = async action => {
+    let { page } = this.state
+    page = action === 'previous' ? --page : ++page
+
+    await this.setState({ loading: true, page })
+
+    this.loadIssues()
   }
 
   render() {
@@ -72,8 +93,8 @@ export default class Repository extends Component {
       repository,
       issues,
       loading,
-      activeFilter,
-      filterOptions
+      issuesState,
+      issuesStateOptions
     } = this.state
 
     if (loading) {
@@ -89,8 +110,8 @@ export default class Repository extends Component {
         </Owner>
 
         <IssueContainer>
-          <Filter active={activeFilter} onChange={this.handleFilterChange}>
-            {filterOptions.map(option => (
+          <Filter active={issuesState} onChange={this.handleFilterChange}>
+            {issuesStateOptions.map(option => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -126,6 +147,18 @@ export default class Repository extends Component {
             ))}
           </IssueList>
         </IssueContainer>
+        <IssuesNavigation>
+          <div>
+            {this.state.page > 1 && (
+              <button onClick={() => this.handlePage('previous')}>
+                Previous
+              </button>
+            )}
+          </div>
+
+          <button onClick={() => this.handlePage('next')}>Next</button>
+        </IssuesNavigation>
+        {/* { this.state.page !== 1 ? <a href=""></a>} */}
       </Container>
     )
   }

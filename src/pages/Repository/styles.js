@@ -6,6 +6,21 @@ export const IssueContainer = styled.div`
   align-items: center;
 `
 
+export const IssuesNavigation = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+
+  button {
+    background: #7159c1;
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+  }
+`
+
 export const IssueList = styled.ul`
   list-style: none;
 
