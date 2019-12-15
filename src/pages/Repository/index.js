@@ -3,14 +3,17 @@ import api from '../../services/api'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-import { IssueList, Loading, Owner } from './styles'
+import { IssueContainer, IssueList, Loading, Owner } from './styles'
 import Container from '../../components/container'
+import Filter from '../../components/filter'
 
 export default class Repository extends Component {
   state = {
     repository: {},
     issues: [],
-    loading: true
+    loading: true,
+    activeFilter: 'all',
+    filterOptions: ['all', 'open', 'closed']
   }
 
   static propTypes = {
@@ -30,8 +33,8 @@ export default class Repository extends Component {
       api.get(`/repos/${repositoryName}`),
       api.get(`/repos/${repositoryName}/issues`, {
         params: {
-          status: 'open',
-          per_page: 5
+          state: 'all',
+          per_page: 20
         }
       })
     ])
@@ -43,8 +46,35 @@ export default class Repository extends Component {
     })
   }
 
+  handleFilterChange = async e => {
+    const activeFilter = e.target.value
+    this.setState({ loading: true, activeFilter })
+
+    const issues = await api.get(
+      `/repos/${this.state.repository.full_name}/issues`,
+      {
+        params: {
+          state: activeFilter,
+          per_page: 20
+        }
+      }
+    )
+
+    this.setState({
+      issues: issues.data,
+      loading: false,
+      activeFilter
+    })
+  }
+
   render() {
-    const { repository, issues, loading } = this.state
+    const {
+      repository,
+      issues,
+      loading,
+      activeFilter,
+      filterOptions
+    } = this.state
 
     if (loading) {
       return <Loading>Loading...</Loading>
@@ -57,34 +87,45 @@ export default class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
-        <IssueList>
-          {issues.map(issue => (
-            <li key={String(issue.id)}>
-              <a
-                href={issue.user.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img src={issue.user.avatar_url} alt={issue.user.login} />
-              </a>
-              <div>
-                <strong>
-                  <a
-                    href={issue.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {issue.title}
-                  </a>
-                  {issue.labels.map(label => (
-                    <span key={String(label.id)}>{label.name}</span>
-                  ))}
-                </strong>
-                <p>{issue.user.login}</p>
-              </div>
-            </li>
-          ))}
-        </IssueList>
+
+        <IssueContainer>
+          <Filter active={activeFilter} onChange={this.handleFilterChange}>
+            {filterOptions.map(option => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </Filter>
+
+          <IssueList>
+            {issues.map(issue => (
+              <li key={String(issue.id)}>
+                <a
+                  href={issue.user.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img src={issue.user.avatar_url} alt={issue.user.login} />
+                </a>
+                <div>
+                  <strong>
+                    <a
+                      href={issue.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {issue.title}
+                    </a>
+                    {issue.labels.map(label => (
+                      <span key={String(label.id)}>{label.name}</span>
+                    ))}
+                  </strong>
+                  <p>{issue.user.login}</p>
+                </div>
+              </li>
+            ))}
+          </IssueList>
+        </IssueContainer>
       </Container>
     )
   }
