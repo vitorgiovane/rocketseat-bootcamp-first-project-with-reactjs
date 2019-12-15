@@ -45,9 +45,22 @@ class Main extends Component {
     e.preventDefault()
     this.setState({ loading: true })
     const { newRepository, repositories } = this.state
-
     let response = null
     try {
+      if (
+        newRepository === undefined ||
+        newRepository === null ||
+        newRepository.length < 4
+      ) {
+        throw new Error('Invalid repository name!')
+      }
+
+      const repositoryAlreadyExists = repositories.find(
+        repository => repository.name === newRepository
+      )
+      if (repositoryAlreadyExists) {
+        throw new Error('Duplicated repository!')
+      }
       response = await api.get(`/repos/${newRepository}`)
     } catch (exception) {
       this.setState({
