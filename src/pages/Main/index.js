@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { Form, List, SubmitButton } from './styles'
+import { Form, InputRepository, List, SubmitButton } from './styles'
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa'
 import Container from '../../components/container'
 
@@ -10,7 +10,8 @@ class Main extends Component {
   state = {
     newRepository: '',
     repositories: [],
-    loading: false
+    loading: false,
+    notFound: false
   }
 
   componentDidMount() {
@@ -44,7 +45,17 @@ class Main extends Component {
     e.preventDefault()
     this.setState({ loading: true })
     const { newRepository, repositories } = this.state
-    const response = await api.get(`/repos/${newRepository}`)
+
+    let response = null
+    try {
+      response = await api.get(`/repos/${newRepository}`)
+    } catch (exception) {
+      this.setState({
+        notFound: true,
+        loading: false
+      })
+      return
+    }
 
     const data = {
       name: response.data.full_name
@@ -53,12 +64,13 @@ class Main extends Component {
     this.setState({
       repositories: [...repositories, data],
       newRepository: '',
-      loading: false
+      loading: false,
+      notFound: false
     })
   }
 
   render() {
-    const { loading, newRepository, repositories } = this.state
+    const { loading, newRepository, repositories, notFound } = this.state
     return (
       <Container>
         <h1>
@@ -67,12 +79,13 @@ class Main extends Component {
         </h1>
 
         <Form onSubmit={this.handleSubmit}>
-          <input
-            type="text"
+          <InputRepository
             placeholder="Add repository"
             value={newRepository}
             onChange={this.handleInputChange}
+            notFound={notFound}
           />
+
           <SubmitButton loading={loading ? 1 : 0}>
             {loading ? (
               <FaSpinner color="#FFFFFF" size={18} />

@@ -3,14 +3,25 @@ import styled, { keyframes, css } from 'styled-components'
 export const Form = styled.form`
   margin-top: 30px;
   display: flex;
+`
 
-  input {
-    flex: 1;
-    border: 1px solid #eeeeee;
-    padding: 15px 10px;
-    border-radius: 4px;
-    font-size: 16px;
-  }
+export const InputRepository = styled.input.attrs(props => ({
+  type: 'text',
+  placeholder: props.placeholder,
+  value: props.value,
+  onChange: props.onChange
+}))`
+  flex: 1;
+  border: 1px solid #eeeeee;
+  padding: 15px 10px;
+  border-radius: 4px;
+  font-size: 16px;
+
+  ${props =>
+    props.notFound &&
+    css`
+      border: 2px solid #d50000;
+    `}
 `
 
 const rotate = keyframes`
