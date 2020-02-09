@@ -6,6 +6,8 @@
   Desafio 5: Primeiro projeto com ReactJS
 </h3>
 
+<p align="center">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-%2304D361">
 </p>
 
 ## Main
