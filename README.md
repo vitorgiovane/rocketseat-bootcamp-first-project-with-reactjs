@@ -8,6 +8,7 @@
 
 <p align="center">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-%2304D361">
+  <img alt="Netlify Status" src="https://api.netlify.com/api/v1/badges/e4f4e866-7de8-4e12-9260-776abea5ec16/deploy-status">
 </p>
 
 ## Main
